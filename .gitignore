@@ -1,3 +1,2 @@
-services/gateway/tmp
-db-data/mongo
-services/logger/tmp
+services/**/tmp
+db-data/*
