@@ -10,3 +10,25 @@ services:
       - 8000:8000
     volumes:
       - ./services/gateway/:/go/src/app
+
+  logger:
+    container_name: logger
+    build:
+      context: ./services/logger
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./services/logger/:/go/src/app
+
+  mongo:
+    container_name: mongo
+    image: "mongo:4.2.16-bionic"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: logs
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./db-data/mongo/:/data/db
