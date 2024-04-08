@@ -14,6 +14,8 @@ var (
 	LoggerLevel   string
 	LogFile       string
 	LogFileMaxAge int
+	rpcPort       string
+	gRpcPort      string
 )
 
 func Load() {
@@ -22,6 +24,8 @@ func Load() {
 	LoggerLevel = os.Getenv("LOGGER_LEVEL")
 	LogFile = os.Getenv("LOG_FILE")
 	LogFileMaxAge = 7
+	rpcPort = "5001"
+	gRpcPort = "50051"
 }
 
 func GetMongoClient() (*mongo.Client, error) {
