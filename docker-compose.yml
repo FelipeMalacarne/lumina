@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  gateway:
+    container_name: gateway
+    build:
+      context: ./services/gateway
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./services/gateway/:/go/src/app
