@@ -16,6 +16,13 @@ services:
     build:
       context: ./services/logger
       dockerfile: Dockerfile
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB_NAME: logs
+      MONGO_ROOT_USERNAME: admin
+      MONGO_ROOT_PASSWORD: password
+      LOG_FILE: ./db-data/logs/log.txt
+
     volumes:
       - ./services/logger/:/go/src/app
 

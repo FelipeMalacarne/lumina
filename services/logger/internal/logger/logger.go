@@ -2,73 +2,47 @@ package logger
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"path/filepath"
 	"time"
 
-	"github.com/felipemalacarne/lumina/logger/internal/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Logger struct {
 	collection *mongo.Collection
+	LogEntry   LogEntry
+}
+
+type Service string
+
+const (
+	GATEWAY Service = "GATEWAY"
+	BROKER  Service = "BROKER"
+	LOGGER  Service = "LOGGER"
+	MAILER  Service = "MAILER"
+	AUTH    Service = "AUTH"
+)
+
+type LogEntry struct {
+	CreatedAt time.Time `bson:"created_at" json:"created_at"`
+	Data      bson.M    `bson:"data" json:"data"`
+	ID        string    `bson:"_id,omitempty" json:"id,omitempty"`
+	Message   string    `bson:"message" json:"message"`
+	Level     Level     `bson:"level" json:"level"`
+	Service   Service   `bson:"service" json:"service"`
 }
 
 func New(collection *mongo.Collection) *Logger {
 	return &Logger{collection: collection}
 }
 
-func (l *Logger) Log(level string, message string, data bson.M) error {
-	logEntry := bson.M{
-		"timestamp": time.Now(),
-		"level":     level,
-		"message":   message,
-		"data":      data,
-	}
-	_, err := l.collection.InsertOne(context.Background(), logEntry)
+func (l *Logger) Log(entry LogEntry) error {
+	_, err := l.collection.InsertOne(context.TODO(), LogEntry{
+		Level:     entry.Level,
+		Message:   entry.Message,
+		Data:      entry.Data,
+		Service:   entry.Service,
+		CreatedAt: time.Now(),
+	})
 	return err
-}
-
-func (l *Logger) RotateLogs() error {
-	file, err := os.OpenFile(filepath.Join(config.LogFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	now := time.Now()
-	weekAgo := now.AddDate(0, 0, -config.LogFileMaxAge)
-	cutoff := time.Date(weekAgo.Year(), weekAgo.Month(), weekAgo.Day(), 0, 0, 0, 0, time.UTC)
-
-	var logs []bson.M
-	filter := bson.M{"timestamp": bson.M{"$lt": cutoff}}
-	cursor, err := l.collection.Find(context.Background(), filter)
-	if err != nil {
-		return err
-	}
-	defer cursor.Close(context.Background())
-
-	for cursor.Next(context.Background()) {
-		var log bson.M
-		err := cursor.Decode(&log)
-		if err != nil {
-			return err
-		}
-		logs = append(logs, log)
-	}
-
-	if err := cursor.Err(); err != nil {
-		return err
-	}
-
-	for _, log := range logs {
-		_, err := fmt.Fprintf(file, "%v %v %v %v\n", log["timestamp"], log["level"], log["message"], log["data"])
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }

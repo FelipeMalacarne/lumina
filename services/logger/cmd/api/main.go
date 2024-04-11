@@ -5,18 +5,17 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
 	"time"
 
 	"github.com/felipemalacarne/lumina/logger/internal/config"
 	"github.com/felipemalacarne/lumina/logger/internal/database"
 	"github.com/felipemalacarne/lumina/logger/internal/logger"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func main() {
 	config.Load()
 	log.SetOutput(os.Stdout)
-
 	log.SetPrefix(fmt.Sprintf("[%s] ", time.Now().Format("2006-01-02 15:04:05")))
 
 	client, err := database.Connect()
@@ -25,24 +24,18 @@ func main() {
 	}
 	defer client.Disconnect(context.Background())
 
-	collection := client.Database(config.MongoDBName).Collection("logs")
-	logger := logger.New(collection)
+	collection := database.GetCollection(client, "logs")
 
-	ticker := time.NewTicker(1 * time.Minute)
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt)
+	l := logger.New(collection)
 
-	for {
-		select {
-		case <-done:
-			log.Println("Shutting down...")
-			return
-		case t := <-ticker.C:
-			err := logger.RotateLogs()
-			if err != nil {
-				log.Printf("Failed to rotate logs: %v", err)
-			}
-			log.Printf("Rotated logs at %s", t.Format(time.RFC3339))
-		}
-	}
+	l.Log(logger.LogEntry{
+		Level:   logger.INFO,
+		Message: "Log created successfully",
+		Service: logger.LOGGER,
+		Data: bson.M{
+			"key1": "value1",
+		},
+	})
+
+	log.Println("Log created successfully")
 }
