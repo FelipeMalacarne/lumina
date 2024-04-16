@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/felipemalacarne/lumina/auth/migrations"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -26,6 +28,9 @@ func main() {
 		log.Println("Failed to connect to database")
 		return
 	}
+
+	migrations.DropTables(db)
+	migrations.Migrate(db)
 
 	// Ping the database to ensure the connection is alive
 	pgDB, err := db.DB()
