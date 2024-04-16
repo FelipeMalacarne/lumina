@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package logger.cmd.api.v1;
+
+option go_package = "github.com/felipemalacarne/lumina/logger/cmd/api/v1";
+
+service Logger {
+  rpc Log(LogRequest) returns (LogResponse) {}
+}
+
+message LogRequest {
+  string message = 1;
+  Level level = 2;
+  Service service = 3;
+  map<string, string> data = 4; 
+}
+
+message LogResponse {
+  bool success = 1;
+}
+
+enum Level {
+  INFO = 0;
+  WARN = 1;
+  ERROR = 2;
+  DEBUG = 3;
+  FATAL = 4;
+}
+
+enum Service {
+  GATEWAY = 0;
+  BROKER = 1;
+  LOGGER = 2;
+  MAILER = 3;
+  AUTH = 4;
+  CASHIER = 5;
+  FINANCIAL = 6;
+}
+

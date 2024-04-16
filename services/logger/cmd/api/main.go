@@ -4,13 +4,17 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"time"
 
+	pb "github.com/felipemalacarne/lumina/logger/cmd/api/v1"
 	"github.com/felipemalacarne/lumina/logger/internal/config"
 	"github.com/felipemalacarne/lumina/logger/internal/database"
 	"github.com/felipemalacarne/lumina/logger/internal/logger"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/felipemalacarne/lumina/logger/internal/server"
+
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -25,17 +29,29 @@ func main() {
 	defer client.Disconnect(context.Background())
 
 	collection := database.GetCollection(client, "logs")
+	logger := logger.New(collection)
 
-	l := logger.New(collection)
+	// Create the gRPC server
+	grpcServer := grpc.NewServer()
+	pb.RegisterLoggerServer(grpcServer, server.NewLoggerServer(logger))
 
-	l.Log(logger.LogEntry{
-		Level:   logger.INFO,
-		Message: "Log created successfully",
-		Service: logger.LOGGER,
-		Data: bson.M{
-			"key1": "value1",
-		},
-	})
+	// Start the server
+	lis, err := net.Listen("tcp", config.GrpcPort)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	log.Println("Server listening on port: " + config.GrpcPort)
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
+	// l.Log(logger.LogEntry{
+	// 	Level:   logger.INFO,
+	// 	Message: "Log created successfully",
+	// 	Service: logger.LOGGER,
+	// 	Data: bson.M{
+	// 		"key1": "value1",
+	// 	},
+	// })
 
-	log.Println("Log created successfully")
+	// log.Println("Log created successfully")
 }

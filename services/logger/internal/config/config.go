@@ -9,8 +9,8 @@ var (
 	MongoDBName       string
 	MongoRootUsername string
 	MongoRootPassword string
-	rpcPort           string
-	gRpcPort          string
+	RpcPort           string
+	GrpcPort          string
 )
 
 func Load() {
@@ -18,6 +18,6 @@ func Load() {
 	MongoDBName = os.Getenv("MONGO_DB_NAME")
 	MongoRootUsername = os.Getenv("MONGO_ROOT_USERNAME")
 	MongoRootPassword = os.Getenv("MONGO_ROOT_PASSWORD")
-	rpcPort = "5001"
-	gRpcPort = "50051"
+	RpcPort = "5001"
+	GrpcPort = ":50051"
 }

@@ -25,9 +25,3 @@ func Connect() (*mongo.Client, error) {
 func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
 	return client.Database(config.MongoDBName).Collection(collectionName)
 }
-
-type Models struct {
-	LogEntry LogEntry
-}
-
-type LogEntry interface{}
