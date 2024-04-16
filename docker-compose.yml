@@ -22,10 +22,27 @@ services:
       MONGO_ROOT_USERNAME: admin
       MONGO_ROOT_PASSWORD: password
       LOG_FILE: ./db-data/logs/log.txt
-
     volumes:
       - ./services/logger/:/go/src/app
 
+  auth:
+    container_name: auth
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: auth_db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: auth
+      DB_SSLMODE: disable
+      DB_TIMEZONE: America/Sao_Paulo
+      DB_CONNECT_TIMEOUT: 5
+    volumes:
+      - ./services/auth/:/go/src/app
+
+# ############################################
   mongo:
     container_name: mongo
     image: "mongo:4.2.16-bionic"
@@ -37,3 +54,17 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
       - ./db-data/mongo/:/data/db
+
+  auth_db:
+    image: 'postgres:14.2'
+    ports:
+      - "5432:5432"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: auth
+    volumes:
+      - ./db-data/auth_db/:/var/lib/postgresql/data/
