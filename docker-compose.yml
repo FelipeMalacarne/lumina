@@ -39,8 +39,31 @@ services:
       DB_SSLMODE: disable
       DB_TIMEZONE: America/Sao_Paulo
       DB_CONNECT_TIMEOUT: 5
+    depends_on:
+      auth_db:
+        condition: service_healthy
     volumes:
       - ./services/auth/:/go/src/app
+
+  transactions:
+    container_name: transactions
+    build:
+      context: ./services/transactions
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: transactions_db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: transactions
+      DB_SSLMODE: disable
+      DB_TIMEZONE: America/Sao_Paulo
+      DB_CONNECT_TIMEOUT: 5
+    depends_on:
+      transactions_db:
+        condition: service_healthy
+    volumes:
+      - ./services/transactions/:/go/src/app
 
 # ############################################
   mongo:
@@ -66,5 +89,31 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: auth
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 5s
     volumes:
       - ./db-data/auth_db/:/var/lib/postgresql/data/
+
+  transactions_db:
+    image: 'postgres:14.2'
+    ports:
+      - "5433:5432"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: transactions
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - ./db-data/transactions_db/:/var/lib/postgresql/data/

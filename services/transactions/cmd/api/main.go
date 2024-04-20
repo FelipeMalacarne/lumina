@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/felipemalacarne/lumina/auth/migrations"
+	"github.com/felipemalacarne/lumina/transactions/migrations"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-const webPort = "8002"
+const webPort = "8003"
 
 var tries int64
 
@@ -77,6 +77,8 @@ func connectToDB() *gorm.DB {
 		log.Println("Failed to connect to database", err)
 		return nil
 	}
+
+	db = db.Debug()
 
 	return db
 }
