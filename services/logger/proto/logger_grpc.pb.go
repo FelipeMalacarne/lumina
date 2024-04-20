@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v5.26.1
-// source: cmd/api/v1/logger.proto
+// source: proto/logger.proto
 
-package v1
+package proto
 
 import (
 	context "context"
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Logger_Log_FullMethodName = "/logger.cmd.api.v1.Logger/Log"
+	Logger_Log_FullMethodName = "/proto.Logger/Log"
 )
 
 // LoggerClient is the client API for Logger service.
@@ -96,7 +96,7 @@ func _Logger_Log_Handler(srv interface{}, ctx context.Context, dec func(interfac
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Logger_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "logger.cmd.api.v1.Logger",
+	ServiceName: "proto.Logger",
 	HandlerType: (*LoggerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -105,5 +105,5 @@ var Logger_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cmd/api/v1/logger.proto",
+	Metadata: "proto/logger.proto",
 }

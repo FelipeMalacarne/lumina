@@ -1,10 +1,9 @@
-package logger
+package main
 
 import (
 	"context"
 	"time"
 
-	"github.com/felipemalacarne/lumina/logger/internal/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -17,8 +16,8 @@ func New(collection *mongo.Collection) *Logger {
 	return &Logger{collection: collection}
 }
 
-func (l *Logger) NewEntry(level database.Level, message string, data bson.M, service database.Service) database.LogEntry {
-	return database.LogEntry{
+func (l *Logger) NewEntry(level Level, message string, data bson.M, service Service) LogEntry {
+	return LogEntry{
 		CreatedAt: time.Now(),
 		Data:      data,
 		Message:   message,
@@ -27,7 +26,7 @@ func (l *Logger) NewEntry(level database.Level, message string, data bson.M, ser
 	}
 }
 
-func (l *Logger) Log(entry database.LogEntry) error {
+func (l *Logger) Log(entry LogEntry) error {
 	_, err := l.collection.InsertOne(context.TODO(), entry)
 	if err != nil {
 		return err

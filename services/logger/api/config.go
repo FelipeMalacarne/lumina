@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"os"
@@ -13,7 +13,7 @@ var (
 	GrpcPort          string
 )
 
-func Load() {
+func LoadConfig() {
 	MongoURI = os.Getenv("MONGO_URI")
 	MongoDBName = os.Getenv("MONGO_DB_NAME")
 	MongoRootUsername = os.Getenv("MONGO_ROOT_USERNAME")

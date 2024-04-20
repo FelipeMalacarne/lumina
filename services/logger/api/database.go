@@ -1,18 +1,17 @@
-package database
+package main
 
 import (
 	"context"
 
-	"github.com/felipemalacarne/lumina/logger/internal/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func Connect() (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI(config.MongoURI)
+	clientOptions := options.Client().ApplyURI(MongoURI)
 	clientOptions.SetAuth(options.Credential{
-		Username: config.MongoRootUsername,
-		Password: config.MongoRootPassword,
+		Username: MongoRootUsername,
+		Password: MongoRootPassword,
 	})
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
@@ -23,5 +22,5 @@ func Connect() (*mongo.Client, error) {
 }
 
 func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	return client.Database(config.MongoDBName).Collection(collectionName)
+	return client.Database(MongoDBName).Collection(collectionName)
 }

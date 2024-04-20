@@ -1,21 +1,18 @@
-package server
+package main
 
 import (
 	"context"
 
+	pb "github.com/felipemalacarne/lumina/logger/proto"
 	"go.mongodb.org/mongo-driver/bson"
-
-	pb "github.com/felipemalacarne/lumina/logger/cmd/api/v1"
-	"github.com/felipemalacarne/lumina/logger/internal/database"
-	"github.com/felipemalacarne/lumina/logger/internal/logger"
 )
 
 type LoggerServer struct {
 	pb.UnimplementedLoggerServer
-	logger *logger.Logger
+	logger *Logger
 }
 
-func NewLoggerServer(logger *logger.Logger) *LoggerServer {
+func NewLoggerServer(logger *Logger) *LoggerServer {
 	return &LoggerServer{logger: logger}
 }
 
@@ -27,10 +24,10 @@ func (s *LoggerServer) Log(ctx context.Context, req *pb.LogRequest) (*pb.LogResp
 	}
 
 	entry := s.logger.NewEntry(
-		database.Level(req.Level),
+		Level(req.Level),
 		req.Message,
 		data,
-		database.Service(req.Service),
+		Service(req.Service),
 	)
 
 	err := s.logger.Log(entry)
