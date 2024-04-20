@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 
+	"github.com/felipemalacarne/lumina/logger/api/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func Connect() (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI(MongoURI)
+	clientOptions := options.Client().ApplyURI(config.MongoURI)
 	clientOptions.SetAuth(options.Credential{
-		Username: MongoRootUsername,
-		Password: MongoRootPassword,
+		Username: config.MongoRootUsername,
+		Password: config.MongoRootPassword,
 	})
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
@@ -22,5 +23,5 @@ func Connect() (*mongo.Client, error) {
 }
 
 func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	return client.Database(MongoDBName).Collection(collectionName)
+	return client.Database(config.MongoDBName).Collection(collectionName)
 }

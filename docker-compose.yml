@@ -21,7 +21,8 @@ services:
       MONGO_DB_NAME: logs
       MONGO_ROOT_USERNAME: admin
       MONGO_ROOT_PASSWORD: password
-      LOG_FILE: ./db-data/logs/log.txt
+      RPC_PORT: :5001
+      GRPC_PORT: :50051
 
     volumes:
       - ./services/logger/:/go/src/app
