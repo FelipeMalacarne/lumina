@@ -21,8 +21,6 @@ services:
       MONGO_DB_NAME: logs
       MONGO_ROOT_USERNAME: admin
       MONGO_ROOT_PASSWORD: password
-      LOG_FILE: ./db-data/logs/log.txt
-
     volumes:
       - ./services/logger/:/go/src/app
 
@@ -34,6 +32,9 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: password
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     volumes:
       - ./services/broker/:/go/src/app
 
@@ -63,3 +64,8 @@ services:
       replicas: 1
     volumes:
       - ./db-data/rabbitmq:/var/lib/rabbitmq/
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
