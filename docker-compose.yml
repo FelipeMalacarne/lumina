@@ -26,6 +26,17 @@ services:
     volumes:
       - ./services/logger/:/go/src/app
 
+  broker:
+    container_name: broker
+    build:
+      context: ./services/broker
+      dockerfile: Dockerfile
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - ./services/broker/:/go/src/app
+
   mongo:
     container_name: mongo
     image: "mongo:4.2.16-bionic"
@@ -37,3 +48,18 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
       - ./db-data/mongo/:/data/db
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: "rabbitmq:3-management" # TODO: swap to alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - ./db-data/rabbitmq:/var/lib/rabbitmq/
