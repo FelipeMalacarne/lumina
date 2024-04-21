@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package logger.cmd.api.v1;
+package proto;
 
-option go_package = "github.com/felipemalacarne/lumina/logger/cmd/api/v1";
+option go_package = "github.com/felipemalacarne/lumina/logger/proto";
 
 service Logger {
   rpc Log(LogRequest) returns (LogResponse) {}

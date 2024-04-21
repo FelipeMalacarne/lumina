@@ -18,6 +18,6 @@ func Load() {
 	MongoDBName = os.Getenv("MONGO_DB_NAME")
 	MongoRootUsername = os.Getenv("MONGO_ROOT_USERNAME")
 	MongoRootPassword = os.Getenv("MONGO_ROOT_PASSWORD")
-	RpcPort = "5001"
-	GrpcPort = ":50051"
+	RpcPort = os.Getenv("RPC_PORT")
+	GrpcPort = os.Getenv("GRPC_PORT")
 }
